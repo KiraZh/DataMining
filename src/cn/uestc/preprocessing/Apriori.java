@@ -21,9 +21,9 @@ public class Apriori {
         this.minSup = minSup;
         this.minConf = minConf;
         this.databaseCount = this.database.size();
-        freqItemSet = new TreeMap<Integer, Set<Set<String>>>();
-        itemSetWithSup = new HashMap<Set<String>, Float>();
-        associationRules = new HashMap<Set<String>, HashMap<Set<String>, Float>>();
+        freqItemSet = new TreeMap<>();
+        itemSetWithSup = new HashMap<>();
+        associationRules = new HashMap<>();
 
     }
 
@@ -34,14 +34,14 @@ public class Apriori {
         File file = new File(fn);
         FileReader fr = new FileReader(file);
         BufferedReader br = new BufferedReader(fr);
-        Map<Integer, Set<String>> DB = new HashMap<Integer, Set<String>>();
+        Map<Integer, Set<String>> DB = new HashMap<>();
         String line;
         String sp = ",";//分隔符
         int num = 0;
         //读入数据，生成map
         while ((line = br.readLine()) != null) {
             String[] temp = line.trim().split(sp);
-            Set<String> set = new TreeSet<String>();
+            Set<String> set = new TreeSet<>();
             for (int i = 1; i < temp.length; i++) { //第一列为ID,不读入
                 set.add(temp[i].trim());
             }
@@ -90,13 +90,13 @@ public class Apriori {
      * @return <频繁1项集，支持度>
      */
     public Map<Set<String>, Float> findFreqOneItemSet() {
-        Map<Set<String>, Float> map = new HashMap<Set<String>, Float>();
-        HashMap<Set<String>, Integer> oneItemMap = new HashMap<Set<String>, Integer>();
+        Map<Set<String>, Float> map = new HashMap<>();
+        HashMap<Set<String>, Integer> oneItemMap = new HashMap<>();
         //支持度计数
         for (Map.Entry<Integer, Set<String>> entry : database.entrySet()) {
             Set<String> itemSet = entry.getValue();
             for (String item : itemSet) {
-                Set<String> key = new HashSet<String>();
+                Set<String> key = new HashSet<>();
                 key.add(item.trim());
                 if (!oneItemMap.containsKey(key)) {
                     oneItemMap.put(key, 1);
@@ -118,7 +118,7 @@ public class Apriori {
      * @return <频繁k项集，支持度>
      */
     public Map<Set<String>, Float> findFreqKItemSet(int k, Set<Set<String>> candiKItemSet) {
-        HashMap<Set<String>, Integer> itemMap = new HashMap<Set<String>, Integer>();
+        HashMap<Set<String>, Integer> itemMap = new HashMap<>();
         //支持度计数
         for (Map.Entry<Integer, Set<String>> entry : database.entrySet()) {
             for (Set<String> itemSet : candiKItemSet) {
@@ -143,9 +143,9 @@ public class Apriori {
      * @return 项集与支持度的map
      */
     private Map<Set<String>, Float> getSetFloatMap(HashMap<Set<String>, Integer> itemMap) {
-        Map<Set<String>, Float> map = new HashMap<Set<String>, Float>();
+        Map<Set<String>, Float> map = new HashMap<>();
         for (Map.Entry<Set<String>, Integer> entry : itemMap.entrySet()) {
-            Float support = entry.getValue() / new Float(databaseCount);
+            float support = entry.getValue() / new Float(databaseCount);
             if (support >= minSup) {
                 map.put(entry.getKey(), support);
             }
@@ -162,17 +162,16 @@ public class Apriori {
      * @return 候选K+1项集
      */
     public Set<Set<String>> apriori_gen(int k, Set<Set<String>> freqKItemSet) {
-        Set<Set<String>> candiFreqKItemSet = new HashSet<Set<String>>();
+        Set<Set<String>> candiFreqKItemSet = new HashSet<>();
         for (Set<String> set : freqKItemSet) {
             for (Set<String> set1 : freqKItemSet) {
                 if (!set.equals(set1)) {
                     //连接步
-                    Set<String> commItems = new HashSet<String>();
-                    commItems.addAll(set);
+                    Set<String> commItems = new HashSet<>(set);
                     commItems.retainAll(set1);
                     //确保前k-2项相同
                     if (commItems.size() == k - 2) {
-                        Set<String> candiItems = new HashSet<String>();
+                        Set<String> candiItems = new HashSet<>();
                         candiItems.addAll(set);
                         candiItems.addAll(set1);
                         if (!has_infrequent_subset(candiItems, freqKItemSet)) {
@@ -196,8 +195,7 @@ public class Apriori {
         //得到candiItem（k+1）的所有k项子集
         //如果有子集不在频繁k项集中，则返回false
         for (String item : candiItems) {
-            Set<String> subSet = new HashSet<String>();
-            subSet.addAll(candiItems);
+            Set<String> subSet = new HashSet<>(candiItems);
             subSet.remove(item);
             if (!freqKItems.contains(subSet)) {
                 return true;
@@ -213,11 +211,9 @@ public class Apriori {
         freqItemSet.remove(1);
         for (Map.Entry<Integer, Set<Set<String>>> entry : freqItemSet.entrySet()) {
             for (Set<String> itemSet : entry.getValue()) {    //遍历所有频繁项集（k>1)
-                Set<Set<String>> subSet = new HashSet<>();
-                subSet = properSubSet(itemSet);
+                Set<Set<String>> subSet = properSubSet(itemSet);
                 for (Set<String> set1 : subSet) {
-                    Set<String> set2 = new HashSet<>();
-                    set2.addAll(itemSet);
+                    Set<String> set2 = new HashSet<>(itemSet);
                     set2.removeAll(set1);
                     float conf = itemSetWithSup.get(itemSet) / itemSetWithSup.get(set1);
                     if (conf >= minConf) {
@@ -242,7 +238,7 @@ public class Apriori {
      * @return 真子集
      */
     public Set<Set<String>> properSubSet(Set<String> itemSet) {
-        Set<Set<String>> subSets = new HashSet<Set<String>>();
+        Set<Set<String>> subSets = new HashSet<>();
         List<String> list = new ArrayList<>(itemSet);
         int max = 1 << itemSet.size();
         for (int i = 0; i < max; i++) {
