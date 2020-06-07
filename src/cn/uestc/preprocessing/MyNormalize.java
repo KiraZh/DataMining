@@ -13,7 +13,7 @@ import weka.filters.unsupervised.attribute.Normalize;
 public class MyNormalize {
     public static void main(String[] args) throws Exception {
         //读取数据
-        DataSource source = new DataSource("data/iris.arff");
+        DataSource source = new DataSource("data/1/iris.arff");
         Instances instances = source.getDataSet();
         //归一化
         Normalize norm = new Normalize();
@@ -38,7 +38,7 @@ public class MyNormalize {
             e.printStackTrace();
         }
         //保存数据
-        DataSink.write("data/iris_norm.arff", newInstances);
+        DataSink.write("data/1/iris_norm.arff", newInstances);
     }
 
 }

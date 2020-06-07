@@ -11,7 +11,7 @@ import weka.filters.supervised.attribute.AttributeSelection;
 public class FeatureSelection {
     public static void main(String[] args) throws Exception{
         //read data
-        DataSource source = new DataSource("data/iris.arff");
+        DataSource source = new DataSource("data/1/iris.arff");
         Instances instances = source.getDataSet();
         //process
         ASEvaluation ae = new InfoGainAttributeEval();
@@ -23,6 +23,6 @@ public class FeatureSelection {
         as.setSearch(ranker);
         as.setInputFormat(instances);
         Instances newInstances = Filter.useFilter(instances,as);
-        DataSink.write("data/iris_fs.arff",newInstances);
+        DataSink.write("data/1/iris_fs.arff",newInstances);
     }
 }

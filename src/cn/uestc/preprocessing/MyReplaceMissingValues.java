@@ -6,7 +6,7 @@ import weka.core.converters.ConverterUtils.DataSource;
 
 public class MyReplaceMissingValues {
     public static void main(String[] args) throws Exception {
-        DataSource source = new DataSource("data/labor.arff");
+        DataSource source = new DataSource("data/1/labor.arff");
         Instances instances = source.getDataSet();
         int dim = instances.numAttributes();
         int num = instances.numInstances();
@@ -29,6 +29,6 @@ public class MyReplaceMissingValues {
                 }
             }
         }
-        DataSink.write("data/labor_missing.arff", instances);
+        DataSink.write("data/1/labor_missing.arff", instances);
     }
 }

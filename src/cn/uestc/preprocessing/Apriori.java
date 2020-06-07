@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class Apriori {
-    private final Map<Integer, Set<String>> database; //事务数据库
+    private final Map<Integer, Set<String>> database; //数据库
     private final float minSup;   //最小支持度
     private final float minConf;  //最小置信度
     private final Integer databaseCount; //事务数
@@ -28,32 +28,40 @@ public class Apriori {
     }
 
     public static void main(String[] args) throws IOException {
-        String fn = "data/test.txt";
-        float minSup = 0.5f;
-        float minConf = 0.6f;
+        float minSup = 0.2f;
+        float minConf = 0.7f;
+        Map<Integer, Set<String>> DB = getDatabase();
+        Apriori apr = new Apriori(DB, minSup, minConf);
+        apr.findAllFreqItemSet();
+        apr.findAssociationRules();
+    }
+
+    /**
+     * 读取数据与数据初始化
+     *
+     * @return 返回事务数据库
+     * @throws IOException
+     */
+    private static Map<Integer, Set<String>> getDatabase() throws IOException {
+        String fn = "data/2/data.txt";
         File file = new File(fn);
         FileReader fr = new FileReader(file);
         BufferedReader br = new BufferedReader(fr);
         Map<Integer, Set<String>> DB = new HashMap<>();
         String line;
-        String sp = ",";//分隔符
+        String sp = ",";    //分隔符
         int num = 0;
         //读入数据，生成map
         while ((line = br.readLine()) != null) {
             String[] temp = line.trim().split(sp);
             Set<String> set = new TreeSet<>();
-            for (int i = 1; i < temp.length; i++) { //第一列为ID,不读入
+            for (int i = 0; i < temp.length; i++) {
                 set.add(temp[i].trim());
             }
             num++;
             DB.put(num, set);
         }
-        Apriori apr = new Apriori(DB, minSup, minConf);
-        apr.findAllFreqItemSet();
-//        System.out.println(apr.freqItemSet);
-//        System.out.println(apr.itemSetWithSup);
-        apr.findAssociationRules();
-//        System.out.println(apr.associationRules);
+        return DB;
     }
 
     /**
@@ -90,7 +98,6 @@ public class Apriori {
      * @return <频繁1项集，支持度>
      */
     public Map<Set<String>, Float> findFreqOneItemSet() {
-        Map<Set<String>, Float> map = new HashMap<>();
         HashMap<Set<String>, Integer> oneItemMap = new HashMap<>();
         //支持度计数
         for (Map.Entry<Integer, Set<String>> entry : database.entrySet()) {
