@@ -28,32 +28,40 @@ public class Apriori {
     }
 
     public static void main(String[] args) throws IOException {
-        String fn = "data/data.txt";
-        float minSup = 0.7f;
-        float minConf = 0.8f;
+        String fn = "data/data.txt";    //TODO
+        float minSup = 0.15f;
+        float minConf = 0.91f;
         File file = new File(fn);
         FileReader fr = new FileReader(file);
         BufferedReader br = new BufferedReader(fr);
         Map<Integer, Set<String>> DB = new HashMap<>();
         String line;
-        String sp = " ";//分隔符
+        String sp = ",";//分隔符
         int num = 0;
         //读入数据，生成map
         while ((line = br.readLine()) != null) {
             String[] temp = line.trim().split(sp);
             Set<String> set = new TreeSet<>();
             for (int i = 0; i < temp.length; i++) { //第一列为ID,不读入
-                set.add(temp[i].trim());
+                if (!temp[i].trim().equals("?")) {  //TODO changed
+                    if (temp[i].trim().equals("t")) {
+                        String str = String.valueOf(i);
+                        set.add(str);
+//                    set.add(temp[i].trim());}
+                    } else {
+                        set.add(temp[i].trim());
+                    }
+                }
+                num++;
+                DB.put(num, set);
             }
-            num++;
-            DB.put(num, set);
-        }
-        Apriori apr = new Apriori(DB, minSup, minConf);
-        apr.findAllFreqItemSet();
+            Apriori apr = new Apriori(DB, minSup, minConf);
+            apr.findAllFreqItemSet();
 //        System.out.println(apr.freqItemSet);
 //        System.out.println(apr.itemSetWithSup);
-        apr.findAssociationRules();
+            apr.findAssociationRules();
 //        System.out.println(apr.associationRules);
+        }
     }
 
     /**
@@ -64,18 +72,18 @@ public class Apriori {
         //频繁一项集
         itemSetWithSup.putAll(freqOneItemSet);
         freqItemSet.put(1, freqOneItemSet.keySet());
-        System.out.println("频繁1" + "项集：" + freqOneItemSet);
+//        System.out.println("频繁1" + "项集：" + freqOneItemSet);
         //频繁K项集
         int k = 2;
         while (true) {
             Set<Set<String>> C = apriori_gen(k, freqItemSet.get(k - 1));    //由k-1项集生成k项集
             Map<Set<String>, Float> freqKItemSet = findFreqKItemSet(k, C);  //求出频繁k项集
-            if (freqKItemSet.isEmpty()) {
+            if (freqKItemSet.isEmpty()||k>=5) {     //TODO
                 break;
             } else {
                 itemSetWithSup.putAll(freqKItemSet);
                 freqItemSet.put(k, freqKItemSet.keySet());
-                System.out.println("频繁" + k + "项集：" + freqKItemSet);
+//                System.out.println("频繁" + k + "项集：" + freqKItemSet);
             }
             k++;
         }
@@ -216,7 +224,7 @@ public class Apriori {
                     Set<String> set2 = new HashSet<>(itemSet);
                     set2.removeAll(set1);
                     float conf = itemSetWithSup.get(itemSet) / itemSetWithSup.get(set1);
-                    if (conf >= minConf) {
+                    if (conf >= minConf && set1.size()>=4) {    //TODO
                         HashMap<Set<String>, Float> map = new HashMap<>();
                         if (associationRules.containsKey(set1)) {
                             map = associationRules.get(set1);
