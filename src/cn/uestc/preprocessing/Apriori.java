@@ -28,21 +28,21 @@ public class Apriori {
     }
 
     public static void main(String[] args) throws IOException {
-        String fn = "data/test.txt";
-        float minSup = 0.5f;
-        float minConf = 0.6f;
+        String fn = "data/data.txt";
+        float minSup = 0.7f;
+        float minConf = 0.8f;
         File file = new File(fn);
         FileReader fr = new FileReader(file);
         BufferedReader br = new BufferedReader(fr);
         Map<Integer, Set<String>> DB = new HashMap<>();
         String line;
-        String sp = ",";//分隔符
+        String sp = " ";//分隔符
         int num = 0;
         //读入数据，生成map
         while ((line = br.readLine()) != null) {
             String[] temp = line.trim().split(sp);
             Set<String> set = new TreeSet<>();
-            for (int i = 1; i < temp.length; i++) { //第一列为ID,不读入
+            for (int i = 0; i < temp.length; i++) { //第一列为ID,不读入
                 set.add(temp[i].trim());
             }
             num++;
