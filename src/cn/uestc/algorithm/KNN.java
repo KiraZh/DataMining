@@ -1,5 +1,7 @@
 package cn.uestc.algorithm;
 
+import cn.uestc.utils.dataUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -10,39 +12,26 @@ import java.util.Map;
 
 public class KNN {
 
-    public static class Data {
-        double[] data;
-        String label;
-
-        Data(double[] data, String label) {
-            this.data = data;
-            this.label = label;
-        }
-
-        @Override
-        public String toString() {
-            return "Data{" +
-                    "data=" + Arrays.toString(data) +
-                    ", label='" + label + '\'' +
-                    '}';
-        }
-    }
-
-    private int k;
-    private ArrayList<Data> trainSet;
-    private ArrayList<Data> testSet;
-
-    public KNN(String path1,String path2, int k) {
-        this.trainSet = this.loadData(path1);
-        this.testSet = this.loadData(path2);
+    private final int k;
+    private final ArrayList<Data> trainSet;
+    private final ArrayList<Data> testSet;
+    public KNN(String path1, String path2, int k) {
+        this.trainSet = loadData(path1);
+        this.testSet = loadData(path2);
         this.k = k;
     }
 
     public static void main(String[] args) {
-        KNN knn = new KNN("data/3/forKNN/train.txt","data/3/forKNN/test.txt",1);
+        KNN knn = new KNN("data/3/forKNN/train.txt", "data/3/forKNN/test.txt", 1);
         knn.predict();
     }
 
+    /**
+     * 从制定的文件位置读取数据
+     *
+     * @param path 文件的位置
+     * @return 返回数据集
+     */
     public static ArrayList<Data> loadData(String path) {
         ArrayList<Data> dataset = new ArrayList<>();
         File file = new File(path);
@@ -65,16 +54,25 @@ public class KNN {
         return dataset;
     }
 
+    /**
+     * 分类步骤
+     *
+     * @param testData 测试数据点
+     * @return 返回分类结果的标签
+     */
     public String classify(Data testData) {
         int size = trainSet.size();
         double[] distances = new double[size];
-        HashMap<String, Integer> votes = new HashMap<>();
+        HashMap<String, Integer> votes = new HashMap<>();   //用于计算每个标签的投票数
+        //计算测试数据点到训练集各点的距离
         for (int i = 0; i < size; i++) {
-            distances[i] = getDistance(testData, trainSet.get(i));
+            distances[i] = dataUtils.getDistance(testData.data, trainSet.get(i).data);
         }
+        //选择距离最短的k个
         for (int i = 0; i < k; i++) {
             double min = Integer.MAX_VALUE;
             int index = -1;
+            //找最短距离和点的序号
             for (int j = 0; j < size; j++) {
                 if (distances[j] < min) {
                     min = distances[j];
@@ -85,6 +83,7 @@ public class KNN {
                 System.out.println("error");
                 System.exit(1);
             }
+            //将得到的最短距离的点加入投票
             if (votes.containsKey(trainSet.get(index).label)) {
                 int temp = votes.get(trainSet.get(index).label);
                 votes.put(trainSet.get(index).label, temp + 1);
@@ -93,6 +92,7 @@ public class KNN {
             }
             distances[index] = Integer.MAX_VALUE;
         }
+        //找投票中的最大值，也就是分类结果
         int max = 0;
         String str = null;
         for (Map.Entry<String, Integer> entry : votes.entrySet()) {
@@ -104,26 +104,41 @@ public class KNN {
         return str;
     }
 
-    public static double getDistance(Data data1, Data data2) {
-        double sum = 0;
-        for (int i = 0; i < data1.data.length; i++) {
-            sum += Math.pow(data1.data[i] - data2.data[i], 2);
-        }
-        return Math.sqrt(sum);
-    }
-
-    public void predict(){
+    /**
+     * 预测测试数据集，打印预测结果与准确度
+     */
+    public void predict() {
         int num = 0;
-        for(Data data:testSet){
+        //对测试集中的每一个点进行分类
+        for (Data data : testSet) {
             String trueLabel = data.label;
             String predLabel = classify(data);
             System.out.println("数据：" + data.toString());
             System.out.println("真实标签：" + trueLabel + " 预测标签：" + predLabel);
-            if(trueLabel.equals(predLabel)){
+            if (trueLabel.equals(predLabel)) {
                 num++;
             }
         }
         System.out.println("-----------------------");
-        System.out.println("准确率：" + new Float(num)/testSet.size());
+        //计算准确度
+        System.out.println("准确率：" + new Float(num) / testSet.size());
+    }
+
+    public static class Data {
+        double[] data;
+        String label;
+
+        Data(double[] data, String label) {
+            this.data = data;
+            this.label = label;
+        }
+
+        @Override
+        public String toString() {
+            return "Data{" +
+                    "data=" + Arrays.toString(data) +
+                    ", label='" + label + '\'' +
+                    '}';
+        }
     }
 }

@@ -8,7 +8,6 @@ import org.jfree.data.xy.DefaultXYDataset;
 
 
 
-//ע��label ��1��ʼ
 public class PicUtility {
 
 	public static void show(double[][][] T, int numC)
