@@ -27,7 +27,7 @@ public class KNN {
     }
 
     /**
-     * 从制定的文件位置读取数据
+     * 从指定的文件位置读取数据
      *
      * @param path 文件的位置
      * @return 返回数据集
@@ -40,13 +40,13 @@ public class KNN {
             BufferedReader br = new BufferedReader(fr);
             String line;
             while ((line = br.readLine()) != null) {
-                String[] temp = line.trim().split(",");
+                String[] temp = line.trim().split(",");    //以","分割字符串
                 double[] data = new double[temp.length - 1];
                 for (int i = 0; i < data.length; i++) {
-                    data[i] = Double.parseDouble(temp[i]);
+                    data[i] = Double.parseDouble(temp[i]);       //将字符转为数值
                 }
                 Data dataObject = new Data(data, temp[temp.length - 1]);
-                dataset.add(dataObject);
+                dataset.add(dataObject);                         //加入dataset
             }
         } catch (Exception e) {
             e.printStackTrace();

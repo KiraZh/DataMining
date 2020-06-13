@@ -1,0 +1,6 @@
+no_surfacing,flippers,fish
+yes,yes,yes
+yes,yes,yes
+yes,no,no
+no,yes,no
+no,yes,no
